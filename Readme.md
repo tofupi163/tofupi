@@ -4,6 +4,12 @@ TofuPi 是一个声明式terraform 框架，其摒弃复杂的代码式脚本编
 
 TofuPi 的核心目标是简化 Terraform 配置的编写、复用及维护，强化声明式范式，不需要编程逻辑，即可快速完成相关infra资源的创建及更新，解决原生 Terraform 在大规模场景下的复用性、模块化、状态管理等痛点。
 
+## 演示
+* import 阶段
+![import](./img/import.gif)
+* apply 阶段
+![apply](./img/apply.gif)
+
 ## 快速开始
 * 注意1：目前仅支持aws 环境的 s3 和ssm 导入及配置，更多场景还待测试验证
 * 注意2：依赖外网
@@ -34,8 +40,16 @@ tofupi init <project> # or .
 cd <project>
 
 ## 导入现有资源 导入 aws s3 资源, 会生成 aws_terraform.tfstate 到 project 目录
-tofupi import aws -r s3,ssm -p dev -g dev -P 3388
+tofupi import aws -r s3,ssm -p dev -g dev -P test
 
-## 创建terraform
-tofupi apply aws -P 3388 -g dev
+## 导出资源会存在env_import.yaml 中，用户可根据此文件选取复制到env.yaml，然后执行apply 即可创建terraform 配置文件
+
+## 创建terraform 配置文件
+tofupi apply aws -P test -g dev
+
+## 部署terraform
+tofu init
+tofu plan -var-file dev.tfvars -out plan.out
+tofu apply "plan.out"
+
 ```
