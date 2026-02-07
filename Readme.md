@@ -23,15 +23,6 @@ TofuPi 的核心目标是简化 Terraform 配置的编写、复用及维护，�
 ![apply](./img/apply.gif)
 
 ## 快速开始
-* 注意1：目前仅支持aws 的资源导入及配置，更多场景还在开发中，敬请期待
-* 注意2：依赖外网
-* 工具依赖
-  * opentofu
-    * https://github.com/opentofu/opentofu/releases
-  * terraformer
-    * https://github.com/GoogleCloudPlatform/terraformer/releases
-  * 在windows 环境下，需要将 terraformer.exe 及 tofu.exe 放到 PATH 环境变量中, 也可放在bin目录中
-
 * 创建 aws 认证
 ```shell
 ## 配置 aws 配置文件
@@ -43,12 +34,16 @@ us-east-2
 json
 EOF 
 ```
+
 * 开始
 
 ```shell
 ## 初始化目录
 tofupi init <project> # or .
 cd <project>
+
+## 创建模块使用样例 
+tofupi init aws -s -r ecr -P test
 
 ## 导入现有资源 导入 aws s3 资源, 会生成 aws_terraform.tfstate 到 project 目录
 tofupi import aws -r s3,ssm -p dev -g dev -P test
@@ -63,6 +58,20 @@ tofu init
 tofu plan -var-file dev.tfvars -out plan.out
 tofu apply "plan.out"
 
+```
+* 注意1：目前仅支持aws 的资源导入及配置，更多场景还在开发中，敬请期待
+* 注意2：依赖外网
+* 工具依赖
+  * opentofu
+    * https://github.com/opentofu/opentofu/releases
+  * terraformer
+    * https://github.com/GoogleCloudPlatform/terraformer/releases
+  * 在windows 环境下，需要将 terraformer.exe 及 tofu.exe 放到 PATH 环境变量中, 也可放在bin目录中
+* 不会用怎么办？
+通过命令快速创建样例
+```shell
+## 创建模块使用样例
+tofupi init aws -s -r ecr -P test
 ```
 
 ## 配置说明
