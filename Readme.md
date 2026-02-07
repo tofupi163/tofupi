@@ -69,15 +69,15 @@ tofu apply "plan.out"
 ### 模块说明
 模块配置文件位于 terraform/modules/aws 目录下，每个模块对应一组资源类型，例如
 * aws-alb 对应 AWS Application Load Balancer 相关资源
-* 模块中默认是获取terrfaorm 资源名称的第二个字符段作为资源名称，例如 aws_ecr_repository 的资源名称为s3, 若不符合默认规则，则通过.aws.yaml 中配置资源名与模块名的对应关系。
+* 模块中默认是获取terrfaorm 资源名称的第二个字符段作为资源名称，例如 aws_ecr_repository 的资源名称为ecr, 若不符合默认规则，则通过.aws.yaml 中配置资源名与模块名的对应关系。
 * 模块中变量名称与资源参数名称一致，变量类型与资源参数类型一致, 例如 aws_ecr_repository 模块中定义了变量 name 与 aws_ecr_repository 资源的 name 参数一致，且类型为 string。
-* 模块中增加了 _tofupi 参数，变量类型为map 类型，第一层为该模块中管理的资源名称，第二层为该资源的相关操作参数。该参数提供了更丰富的资源定义能力，其子参数如下：
-  * nameKey 参数，默认值为 name, 定义资源名称的来源，例如 aws_security_group 模块中定义了 nameKey = "id"，表示资源名称来自于 aws_security_group 资源的 id 参数的值。
+* 模块中增加了 _tofupi 变量参数，变量类型为map 类型，第一层为该模块中管理的资源名称，第二层为该资源的相关操作参数。该变量参数提供了更丰富的子参数,具有更灵活的资源定义能力，其子参数如下：
+  * nameKey 参数，默认值为 name, 定义资源名称的来源，例如 sg 模块中 aws_security_group 定义了 nameKey = "id"，表示改资源名称来自于 aws_security_group 资源的 id 参数的值。
   * link 参数，定义资源间的关联关系，无默认值，link 定义格式为 主资源名称.关联变量名称.关联资源属性名.主资源属性名，
-    * 例如 aws_security_group.sg_rules.security_group_id.id 定义 link = 主资源名称.关联变量名称.关联资源属性名.主资源属性名，表示 aws_security_group_rule 中的 security_group_id 变量的值与 主资源 aws_security_group 的 id 的值相同，并具有关联性。
+    * 例如 aws_security_group.sg_rules.security_group_id.id 定义 link = 主资源名称.关联变量名称.关联资源属性名.主资源属性名，表示 aws_security_group_rule 中的 security_group_id 变量的值与 主资源 aws_security_group 的 id 的值相同，aws_security_group_rule 资源的所有参数值 赋值给 sg_rules 这个变量。
   * projectID 参数, 定义资源所属的项目ID，无默认值，导入时会根据 projectID 的值进行资源分类。
-  * policy参数，无默认值，定义该资源中的 policy 内容指定的字段的内容是否改写为policy 文件, 内容必须是json格式，并将该参数重定义为 policy_file 参数。
-  * exclude参数，无默认值，定义导入该资源时排除的参数，若exclude 的值是个list。
+  * policy参数，无默认值，定义该资源中的 policy 内容指定的字段的内容是否改写为policy 文件, 内容必须是json格式，并将该指定的字段重定义为 policy_file 参数。
+  * exclude参数，无默认值，定义导入该资源时排除的参数，exclude 的值是个list。
     * 例如 aws_s3_bucket 模块中定义了 exclude = ["acl"]，表示在导入 aws_s3_bucket 资源时排除 acl 参数。
 
 ### env.yaml 说明
@@ -85,10 +85,10 @@ tofu apply "plan.out"
 所有的terraform 配置都通过 env.yaml 文件进行定义，env.yaml 文件位于 project/<项目名>/ 目录下，env.yaml 文件中的结构说明如下：
 * yaml 层级为 声明分类 -> 模块名称 -> 资源名称 -> 资源参数
 * 声明分类有default 和项目名称两种，default 分类下的配置为所有项目的默认参数，项目名称则声明了其包含infra资源的所属项目。
-* default下可定义all、dev、cert、prod层级，其对应的是 命令行参数 -g 的值，表示该参数适用于所有项目的对应环境，all 层级的参数将会被其他层级覆盖。 例如 default 下的 dev 层级的参数适用于所有项目的 dev 环境。all及dev所有参数会被生成到terraform 的 dev.tfvars 文件中。
+* default下可定义all、dev、cert、prod层级，其对应的是 命令行参数 -g 的值，该参数的定义值适用于所有项目的对应环境，all 层级的参数将会被dev、cert、prod等的同名参数覆盖，同时 all及dev所有参数会被生成到terraform 的 dev.tfvars 文件中。
 * 项目名称下的default 则为该项目的默认参数，其将覆盖上层中default的同名参数配置。
-* 资源名称为各模块具体实例的名称，默认为name参数的值，若模块中定义了 nameKey 参数，则为 nameKey 定义的参数值，例如 aws_security_group 模块中定义了 nameKey = "id"，则资源名称为 aws_security_group 资源的 id 参数的值。
-* 资源参数为 terraform 资源的参数配置，参数名称与模块中定义的变量名称一致，参数值为该参数的值，例如 aws_s3_bucket 模块中定义了 name 变量，则在 env.yaml 中配置该资源时，参数名称为 name，参数值为该资源的 name 参数的值。
+* 资源名称为各模块具体实例的名称，默认与name参数的值一致
+* 资源参数为 terraform 资源的参数配置，参数名称与模块中定义的变量名称一致。
 * 导入资源时，会先生成一个 env_import.yaml 文件，文件结构与 env.yaml 文件一致，导入的资源会被分类到对应的项目名称中，其中被exclude定义的及与模块中参数默认值一致的参数将不会被导入到 env_import.yaml 文件中，用户可根据需要将 env_import.yaml 文件中的资源参数复制到 env.yaml 文件中进行最后使用。
 
 
