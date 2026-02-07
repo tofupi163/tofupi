@@ -23,9 +23,8 @@ TofuPi 的核心目标是简化 Terraform 配置的编写、复用及维护，�
 ![apply](./img/apply.gif)
 
 ## 快速开始
-* 注意1：目前仅支持aws 环境的 s3 和ssm 导入及配置，更多场景还待测试验证
+* 注意1：目前仅支持aws 的资源导入及配置，更多场景还在开发中，敬请期待
 * 注意2：依赖外网
-* 注意3：当前仅提供 windows 版本
 * 工具依赖
   * opentofu
     * https://github.com/opentofu/opentofu/releases
