@@ -1,0 +1,3 @@
+[submodule "terraform/modules/aws"]
+	path = terraform/modules/aws
+	url = https://github.com/tofupi163/tofupi_modules_aws.git
