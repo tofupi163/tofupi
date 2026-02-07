@@ -1,6 +1,6 @@
 provider "aws" {
   region = var.aws_region_main
-  profile = "dev"
+  profile = var.profile
   default_tags {
     tags = {
       AssetID       = var.asset_id
